@@ -1,0 +1,63 @@
+# Local stack: API + Postgres + MinIO.  Start with: docker compose up --build
+# The phone reaches the API at http://<this computer's LAN address>:3000.
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://bakers:bakers@postgres:5432/bakers_math
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me}
+      S3_ENDPOINT: http://minio:9000
+      # Presigned upload/download URLs must use an address the phone can reach.
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+      S3_REGION: us-east-1
+      S3_BUCKET: bakers-math-media
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-bakers}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-bakers-secret}
+      PASSWORD_RESET_URL: ${PASSWORD_RESET_URL:-bakersmath://reset-password}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bakers
+      POSTGRES_PASSWORD: bakers
+      POSTGRES_DB: bakers_math
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bakers -d bakers_math"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  minio:
+    # MinIO no longer publishes images on Docker Hub; this is the community fork's build.
+    image: ${MINIO_IMAGE:-pgsty/minio:RELEASE.2026-08-04T00-00-00Z}
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-bakers}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-bakers-secret}
+    ports:
+      - "9000:9000" # S3 API (the phone uploads here)
+      - "9001:9001" # web console
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/minio/health/live"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  pgdata:
+  miniodata:
