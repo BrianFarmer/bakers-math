@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FormulaTable } from '../../components/FormulaTable';
-import { Button, colors, IconButton, Loading, space, styles } from '../../components/ui';
+import { Button, colors, IconButton, Loading, ProgressBar, space, styles } from '../../components/ui';
 import { captureMedia } from '../../data/media';
 import { cancelAlert, ensurePermission, scheduleTimerAlert } from '../../data/notifications';
 import { getLocalBake, saveBake, saveGuidedState, upsertBakeStep } from '../../data/repo';
@@ -159,6 +159,8 @@ export default function Guided() {
   }
 
   const left = timer ? remainingMs(timer, now) : 0;
+  // +5 min can push the time left past the step's length, so the bar's length stretches with it.
+  const total = timer ? Math.max((step.timer_seconds ?? 0) * 1000, left, 1) : 1;
   const note = bake.steps.find((r) => r.step_id === step.id)?.note ?? '';
 
   return (
@@ -201,6 +203,9 @@ export default function Guided() {
             >
               {timer.status === 'finished' ? "Time's up" : formatDuration(left)}
             </Text>
+            <View style={g.progress}>
+              <ProgressBar value={1 - left / total} color={timer.status === 'finished' ? colors.success : colors.primary} />
+            </View>
             <Text style={styles.muted}>
               {timer.status === 'idle' ? (step.auto_start ? 'Starts automatically' : 'Start when you are ready') : null}
               {timer.status === 'paused' ? 'Paused' : null}
@@ -300,7 +305,8 @@ const g = StyleSheet.create({
   stepCount: { fontSize: 14, fontWeight: '600', color: colors.primary, textTransform: 'uppercase', letterSpacing: 1 },
   stepTitle: { fontSize: 34, fontWeight: '800', color: colors.text },
   instructions: { fontSize: 19, lineHeight: 27, color: colors.text },
-  timerBox: { alignItems: 'center', paddingVertical: space(6), gap: space(1) },
+  timerBox: { alignItems: 'center', paddingVertical: space(6), gap: space(2) },
+  progress: { alignSelf: 'stretch', paddingHorizontal: space(6) },
   time: { fontSize: 76, fontWeight: '300', color: colors.text, fontVariant: ['tabular-nums'] },
   note: { flexDirection: 'row', gap: space(2), backgroundColor: colors.primarySoft, padding: space(3), borderRadius: 10 },
   controls: { padding: space(4), gap: space(3), borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },

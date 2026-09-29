@@ -15,8 +15,10 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         headerStyle: { backgroundColor: colors.bg },
-        headerTitleStyle: { color: colors.text },
+        headerTitleStyle: { color: colors.text, fontWeight: '700', fontSize: 20 },
         headerShadowVisible: false,
+        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         sceneStyle: { backgroundColor: colors.bg },
         headerRight: () => <SyncIndicator />,
       }}

@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { router, Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
@@ -10,11 +11,18 @@ import { setupNotifications } from '../data/notifications';
 import { SessionProvider, useSession } from '../data/session';
 import { SyncProvider } from '../data/sync';
 
+// Keep the splash screen up until the saved session has been read, so the app opens on the right screen.
+void SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({ duration: 300, fade: true });
+
 function RootStack() {
   const { ready, user } = useSession();
   useEffect(() => {
     void setupNotifications();
   }, []);
+  useEffect(() => {
+    if (ready) SplashScreen.hide();
+  }, [ready]);
 
   // Tapping a "time's up" alert opens that bake's guided mode (also when it launched the app).
   useEffect(() => {
@@ -38,7 +46,8 @@ function RootStack() {
       screenOptions={{
         headerStyle: { backgroundColor: colors.bg },
         headerTintColor: colors.primary,
-        headerTitleStyle: { color: colors.text },
+        headerTitleStyle: { color: colors.text, fontWeight: '700' },
+        headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.bg },
         headerBackButtonDisplayMode: 'minimal',
       }}

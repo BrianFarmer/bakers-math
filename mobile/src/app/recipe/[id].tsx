@@ -1,10 +1,10 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, ScrollView, Switch, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { FormulaTable } from '../../components/FormulaTable';
 import { MediaThumb } from '../../components/MediaThumb';
 import { SummaryBar } from '../../components/SummaryBar';
-import { Badge, Button, Card, colors, Loading, SectionTitle, space, styles } from '../../components/ui';
+import { Badge, Button, Card, colors, Loading, SectionTitle, space, styles, Toggle } from '../../components/ui';
 import { sqliteStore, useLiveQuery } from '../../data/db';
 import { cacheRemoteRecipe, getRemoteRecipe, useOnlineAction } from '../../data/online';
 import { deleteRecipe, getLocalRecipe, listBakes, listVersions, storeDownload } from '../../data/repo';
@@ -162,11 +162,10 @@ export default function RecipeDetail() {
               <Text style={styles.text}>Public</Text>
               <Text style={styles.muted}>Anyone signed in can find, view and copy it. Needs a connection.</Text>
             </View>
-            <Switch
+            <Toggle
               value={recipe.visibility === 'public'}
               onValueChange={setPublic}
               disabled={busy}
-              trackColor={{ true: colors.primary }}
             />
           </View>
         </Card>

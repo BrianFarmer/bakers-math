@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { MediaThumb } from '../../components/MediaThumb';
-import { Badge, colors, Empty, space, styles } from '../../components/ui';
+import { Badge, colors, Empty, raised, space, styles } from '../../components/ui';
 import { db, useLiveQuery } from '../../data/db';
 import { listBakes, listLocalMedia } from '../../data/repo';
 import type { LocalBake, LocalMedia } from '../../lib/syncEngine';
@@ -45,7 +45,7 @@ function BakeRow({ bake, media, queued }: { bake: LocalBake; media: LocalMedia[]
       accessibilityRole="button"
       onPress={() => router.push({ pathname: '/bake/[id]', params: { id: bake.id } })}
       style={({ pressed }) => [
-        { flexDirection: 'row', gap: space(3), backgroundColor: colors.surface, borderRadius: 14, borderWidth: 1, borderColor: colors.border, padding: space(3) },
+        { flexDirection: 'row', gap: space(3), backgroundColor: colors.surface, borderRadius: 14, borderWidth: 1, borderColor: colors.border, padding: space(3), ...raised },
         pressed && { opacity: 0.8 },
       ]}
     >

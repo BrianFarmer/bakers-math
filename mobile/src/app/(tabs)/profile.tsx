@@ -1,8 +1,8 @@
 import * as Notifications from 'expo-notifications';
 import { useEffect, useState } from 'react';
-import { Alert, Linking, ScrollView, Switch, Text, View } from 'react-native';
+import { Alert, Linking, ScrollView, Text, View } from 'react-native';
 import { ServerField } from '../../components/ServerField';
-import { Button, Card, colors, Field, SectionTitle, space, styles } from '../../components/ui';
+import { Button, Card, colors, Field, SectionTitle, space, styles, Toggle } from '../../components/ui';
 import { getKv, setKv, useLiveQuery, wipe } from '../../data/db';
 import { ensurePermission } from '../../data/notifications';
 import { useOnlineAction } from '../../data/online';
@@ -87,13 +87,12 @@ export default function Profile() {
         <SectionTitle>Timer alerts</SectionTitle>
         <View style={styles.row}>
           <Text style={[styles.text, { flex: 1 }]}>Play a sound</Text>
-          <Switch
+          <Toggle
             value={sound}
             onValueChange={(v) => {
               setSound(v);
               void setKv('sound', v ? 'on' : 'off');
             }}
-            trackColor={{ true: colors.primary }}
           />
         </View>
         {notifications === false ? (

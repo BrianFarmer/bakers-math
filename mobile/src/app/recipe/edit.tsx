@@ -1,8 +1,8 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SummaryBar } from '../../components/SummaryBar';
-import { Button, Card, colors, Field, IconButton, Loading, NumberInput, Segmented, space, styles } from '../../components/ui';
+import { Button, Card, colors, Field, IconButton, Loading, NumberInput, Segmented, space, styles, Toggle } from '../../components/ui';
 import { getLocalRecipe, newIngredient, newRecipe, newStep, saveRecipe } from '../../data/repo';
 import { useUser } from '../../data/session';
 import {
@@ -441,11 +441,10 @@ function StepEditor(props: {
         </View>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: space(2) }}>
           <Text style={[styles.muted, { flexShrink: 1 }]}>Start automatically</Text>
-          <Switch
+          <Toggle
             value={step.auto_start}
             onValueChange={(auto_start) => props.onChange({ auto_start })}
             disabled={!step.timer_seconds}
-            trackColor={{ true: colors.primary }}
           />
         </View>
       </View>

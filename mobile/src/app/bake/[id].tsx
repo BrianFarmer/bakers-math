@@ -1,10 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { FormulaTable } from '../../components/FormulaTable';
 import { MediaThumb, type ThumbItem } from '../../components/MediaThumb';
 import { SummaryBar } from '../../components/SummaryBar';
-import { Button, Card, colors, Empty, Field, Loading, SectionTitle, space, styles } from '../../components/ui';
+import { Button, Card, colors, Empty, Field, Loading, SectionTitle, space, styles, Toggle } from '../../components/ui';
 import { db, useLiveQuery } from '../../data/db';
 import { captureMedia, pickMedia } from '../../data/media';
 import { deleteBake, deleteMedia, getLocalBake, listLocalMedia, saveBake } from '../../data/repo';
@@ -121,10 +121,9 @@ export default function BakeDetail() {
               Show these notes, photos and videos on the recipe's page to anyone who can see the recipe.
             </Text>
           </View>
-          <Switch
+          <Toggle
             value={bake.visibility === 'shared'}
             onValueChange={(on) => save({ visibility: on ? 'shared' : 'private' })}
-            trackColor={{ true: colors.primary }}
           />
         </View>
       </Card>
