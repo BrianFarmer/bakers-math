@@ -6,6 +6,8 @@ percentages, bakes with step timings, notes, photos and videos, and offline sync
 Node 22 + TypeScript (Fastify), Postgres 16, and MinIO for media. Built from the
 [product spec](https://claude.ai/code/artifact/75d1c853-cc27-4aae-83d8-999e6a433cb1).
 
+The phone app (Expo) is in [`mobile/`](mobile/README.md).
+
 ## Run it locally
 
 ```sh

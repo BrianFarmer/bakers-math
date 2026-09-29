@@ -34,3 +34,51 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: docker build -t bakers-math-api .
+
+  mobile:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: bakers
+          POSTGRES_PASSWORD: bakers
+          POSTGRES_DB: bakers_math
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U bakers" --health-interval 2s --health-timeout 3s --health-retries 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            mobile/package-lock.json
+      - name: Install
+        run: |
+          npm ci
+          npm ci --prefix mobile
+      - name: Typecheck
+        run: npm run typecheck --prefix mobile
+      - name: Bundle the Android app
+        working-directory: mobile
+        run: npx expo export --platform android --output-dir /tmp/expo-export
+        env:
+          EXPO_OFFLINE: 1
+      - name: Start MinIO and the API
+        run: |
+          docker run -d --name minio -p 9000:9000 \
+            -e MINIO_ROOT_USER=bakers -e MINIO_ROOT_PASSWORD=bakers-secret \
+            pgsty/minio:RELEASE.2026-08-04T00-00-00Z server /data
+          for i in $(seq 30); do curl -fsS http://localhost:9000/minio/health/live && break; sleep 1; done
+          npx tsx src/server.ts > /tmp/api.log 2>&1 &
+          for i in $(seq 30); do curl -fsS http://localhost:3000/health && break; sleep 1; done
+      - name: Unit and end-to-end sync tests
+        run: npm test --prefix mobile
+        env:
+          E2E_API_URL: http://localhost:3000/v1
+      - name: API log
+        if: failure()
+        run: cat /tmp/api.log
