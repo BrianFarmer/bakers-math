@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
@@ -36,9 +37,10 @@ export default function SignIn() {
   return (
     <SafeAreaView style={styles.screen}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={[styles.content, { paddingTop: space(10) }]} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[styles.content, { paddingTop: space(8) }]} keyboardShouldPersistTaps="handled">
           <View style={{ gap: space(1) }}>
-            <Text style={[styles.title, { fontSize: 32 }]}>Bakers Math</Text>
+            <Image source={require('../../assets/splash-icon.png')} style={{ width: 72, height: 72, marginLeft: -6 }} accessibilityIgnoresInvertColors />
+            <Text style={[styles.title, { fontSize: 34 }]}>Bakers Math</Text>
             <Text style={styles.muted}>Recipes in grams or baker's percentages, guided bakes and a bake log.</Text>
           </View>
           <Segmented

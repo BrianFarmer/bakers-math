@@ -31,6 +31,12 @@ Expo SDK 57, Expo Router. Everything it uses is in Expo Go, so no native build i
 
 You can type just the address (`192.168.1.20`); port 3000 and `/v1` are added.
 
+## Builds and the app stores
+
+`RELEASE.md` covers building installable apps with EAS, signing, TestFlight and Play testing,
+and what only you can do (developer accounts, store forms). Store copy and the privacy policy
+draft are in `store/`.
+
 ## What's where
 
 ```
@@ -51,6 +57,8 @@ src/lib/               plain TypeScript, no React Native (unit tested)
   syncEngine.ts        push outbox, pull changes, upload media, most recent save wins
 src/data/              the phone side: SQLite store, session, sync runner, media, notifications
 test/                  vitest: unit tests and an end-to-end sync test against the API
+scripts/render-icons   draws the icon, splash mark and store graphic from one SVG
+store/                 store listing copy, privacy policy draft, Play feature graphic
 ```
 
 ## How it works

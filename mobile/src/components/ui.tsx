@@ -2,12 +2,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
   type StyleProp,
+  type SwitchProps,
   type TextInputProps,
   type TextStyle,
   type ViewStyle,
@@ -25,9 +28,22 @@ export const colors = {
   danger: '#B3261E',
   success: '#2E7D32',
   warning: '#9A6B00',
+  track: '#EFE8DF',
 };
 
 export const space = (n: number) => n * 4;
+
+/** A soft, warm drop shadow for cards and rows. */
+export const raised: ViewStyle = Platform.select({
+  web: { boxShadow: '0 1px 3px rgba(90, 42, 11, 0.08)' } as ViewStyle,
+  default: {
+    shadowColor: '#5A2A0B',
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+});
 
 export function Button({
   title,
@@ -179,6 +195,29 @@ export function NumberInput({
   );
 }
 
+/** A switch in the app's colors on every platform. */
+export function Toggle(props: SwitchProps) {
+  const android = Platform.OS === 'android';
+  return (
+    <Switch
+      trackColor={{ false: colors.border, true: android ? '#E0B48C' : colors.primary }}
+      thumbColor={android ? (props.value ? colors.primary : '#FFFFFF') : undefined}
+      ios_backgroundColor={colors.border}
+      {...props}
+    />
+  );
+}
+
+/** A thin bar showing how far along something is, from 0 to 1. */
+export function ProgressBar({ value, color = colors.primary }: { value: number; color?: string }) {
+  const pct = Math.round(Math.max(0, Math.min(1, value)) * 1000) / 10;
+  return (
+    <View style={styles.progressTrack} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: pct }}>
+      <View style={[styles.progressFill, { width: `${pct}%`, backgroundColor: color }]} />
+    </View>
+  );
+}
+
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   return <View style={[styles.card, style]}>{children}</View>;
 }
@@ -235,7 +274,9 @@ export function Segmented<T extends string>({
 export function Empty({ icon, title, body, children }: { icon: keyof typeof Ionicons.glyphMap; title: string; body?: string; children?: ReactNode }) {
   return (
     <View style={styles.empty}>
-      <Ionicons name={icon} size={40} color={colors.muted} />
+      <View style={styles.emptyIcon}>
+        <Ionicons name={icon} size={34} color={colors.primary} />
+      </View>
       <Text style={styles.emptyTitle}>{title}</Text>
       {body ? <Text style={styles.emptyBody}>{body}</Text> : null}
       {children}
@@ -290,22 +331,34 @@ export const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: space(4),
     gap: space(3),
+    ...raised,
   },
   sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text },
   badge: { borderRadius: 999, paddingHorizontal: space(2), paddingVertical: 2, alignSelf: 'flex-start' },
   badgeText: { fontSize: 12, fontWeight: '600' },
-  segmented: { flexDirection: 'row', backgroundColor: '#EFE8DF', borderRadius: 10, padding: 3 },
+  segmented: { flexDirection: 'row', backgroundColor: colors.track, borderRadius: 10, padding: 3 },
   segment: { flex: 1, paddingVertical: space(2), alignItems: 'center', borderRadius: 8 },
-  segmentActive: { backgroundColor: colors.surface },
+  segmentActive: { backgroundColor: colors.surface, ...raised },
   segmentText: { fontSize: 14, fontWeight: '600', color: colors.muted },
   segmentTextActive: { color: colors.text },
   empty: { alignItems: 'center', justifyContent: 'center', padding: space(8), gap: space(2) },
+  emptyIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: space(2),
+  },
+  progressTrack: { height: 6, borderRadius: 3, backgroundColor: colors.track, overflow: 'hidden', alignSelf: 'stretch' },
+  progressFill: { height: '100%', borderRadius: 3 },
   emptyTitle: { fontSize: 17, fontWeight: '600', color: colors.text, textAlign: 'center' },
   emptyBody: { fontSize: 14, color: colors.muted, textAlign: 'center' },
   text: { fontSize: 16, color: colors.text },
   muted: { fontSize: 14, color: colors.muted },
-  title: { fontSize: 24, fontWeight: '700', color: colors.text },
+  title: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: -0.3 },
   row: { flexDirection: 'row', alignItems: 'center', gap: space(2) },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.border },
 });

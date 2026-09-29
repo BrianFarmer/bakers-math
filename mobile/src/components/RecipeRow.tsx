@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { formatGrams, formatPercent } from '../lib/bakersMath';
 import type { Recipe } from '../lib/types';
-import { Badge, colors, space, styles } from './ui';
+import { Badge, colors, raised, space, styles } from './ui';
 
 export function RecipeRow({
   recipe,
@@ -32,6 +32,7 @@ export function RecipeRow({
           flexDirection: 'row',
           alignItems: 'center',
           gap: space(3),
+          ...raised,
         },
         pressed && { opacity: 0.8 },
       ]}
